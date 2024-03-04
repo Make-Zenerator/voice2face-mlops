@@ -1,12 +1,12 @@
-version: '3'
+version: '3.7'
 
 services:
   prometheus:
     image: prom/prometheus
     container_name: prometheus
     volumes:
-      - ~/prometheus/config/:/etc/prometheus/
-      - ~/prometheus/prometheus-volume:/prometheus
+      - ./prometheus/config/:/etc/prometheus/
+      - ./prometheus/prometheus-volume:/prometheus
     ports:
       - 9990:9090
     command:
@@ -28,6 +28,19 @@ services:
     ports:
       - 3300:3000
     user: root
+  alertmanager:
+    image: prom/alertmanager
+    container_name: alertmanager
+    user: root
+    ports: 
+      - 9093:9093
+    volumes:
+      - ./alertmanager/config/:/etc/alertmanager/
+    networks:
+      - promnet
+    restart: always
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
 
 networks:
   promnet:
