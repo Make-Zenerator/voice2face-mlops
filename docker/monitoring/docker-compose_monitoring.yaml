@@ -8,7 +8,7 @@ services:
       - ./prometheus/config/:/etc/prometheus/
       - ./prometheus/prometheus-volume:/prometheus
     ports:
-      - 9990:9090
+      - 9090:9090
     command:
       - "--web.enable-lifecycle"
       - '--config.file=/etc/prometheus/prometheus.yml'
