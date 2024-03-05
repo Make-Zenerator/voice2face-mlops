@@ -163,3 +163,12 @@ cython_debug/
 wandb/
 *.pkl
 events.out*
+grafana.db
+000000*
+lock
+queries.active
+tombstones
+prometheus/prometheus-volume/data/*
+index
+0000*
+meta.json
