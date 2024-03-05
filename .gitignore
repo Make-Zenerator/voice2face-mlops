@@ -162,3 +162,7 @@ grafana.db
 000000*
 lock
 queries.active
+tombstones
+prometheus/prometheus-volume/data/*
+index
+0000*
