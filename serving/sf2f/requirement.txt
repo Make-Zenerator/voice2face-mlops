@@ -1,0 +1,8 @@
+glog
+python_speech_features
+webrtcvad
+pydub
+
+##apt
+#apt update
+#apt install gcc
