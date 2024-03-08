@@ -7,18 +7,18 @@ from utils.wav2mel import wav_to_mel
 from datasets import imagenet_deprocess_batch, set_mel_transform, \
     deprocess_and_save, window_segment
     
-os.environ["MLFLOW_S3_ENDPOINT_URL"] = "http://localhost:9000"
-os.environ["MLFLOW_TRACKING_URI"] = "http://localhost:5001"
+os.environ["MLFLOW_S3_ENDPOINT_URL"] = "http://223.130.133.236:9000"
+os.environ["MLFLOW_TRACKING_URI"] = "http://223.130.133.236:5001"
 os.environ["AWS_ACCESS_KEY_ID"] = "minio"
 os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
 mlflow.set_experiment("new-exp")
 model, _ = models.build_model(
             options["generator"],
             image_size=[128,128],
-            checkpoint_start_from="/home/hojun/Documents/project/boostcamp/final_project/mlops/voice2face-modeling/sf2f/data/best_IS_with_model.pt")
+            checkpoint_start_from="/home/hojun/Documents/project/boostcamp/final_project/mlops/temp/voice2face-mlops/best_IS_with_model.pt")
 model.cuda().eval()
     
-voice_path = os.path.join("/home/hojun/Documents/project/boostcamp/final_project/mlops/voice2face-modeling/sf2f/data", '*.wav')
+voice_path = os.path.join("/home/hojun/Documents/project/boostcamp/final_project/mlops/mlflow/train/mlflow/sf2f/data/", '*.wav')
 voice_list = glob.glob(voice_path)
 filename = voice_list[0]
 print(filename)
@@ -61,5 +61,5 @@ with mlflow.start_run():
         artifact_path = "sf2f_pytorch",
         signature= signature,
         input_example = input_sample,
-        pip_requirements = "rec.txt"
+        # pip_requirements = "rec.txt"
     )

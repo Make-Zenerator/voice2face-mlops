@@ -172,3 +172,5 @@ prometheus/prometheus-volume/data/*
 index
 0000*
 meta.json
+*.tar
+*.pth
