@@ -1,0 +1,35 @@
+FROM python:3.9-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Upgrade pip and install necessary Python packages
+RUN pip install -U pip && \
+    pip install \
+    boto3==1.26.8 \
+    mlflow==1.30.0 \
+    psycopg2-binary
+
+# # Install MinIO client
+# RUN cd /tmp && \
+#     wget https://dl.min.io/client/mc/release/linux-amd64/mc && \
+#     chmod +x mc && \
+#     mv mc /usr/bin/mc
+
+# Set the working directory
+WORKDIR /workspace/
+
+# Copy the python package to the container
+COPY ./model1/ /workspace/
+
+# Cleanup workspace
+RUN rm -r /workspace/*
+
+# Copy infra scripts
+COPY scripts/infra/start_mlflow.sh /tmp/
+
+# Add execute permission to the start_mlflow.sh script
+RUN chmod +x /tmp/start_mlflow.sh

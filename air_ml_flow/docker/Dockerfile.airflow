@@ -1,0 +1,19 @@
+# Dockerfile.airflow
+FROM apache/airflow:2.2.4-python3.9
+
+USER root
+
+# Install Poetry for better python dependency management and packaging
+# RUN curl -sSL https://install.python-poetry.org | python3 - \
+#     && cp /root/.local/bin/poetry /usr/local/bin/ \
+#     && poetry config virtualenvs.create false
+
+ENV MY_LOCAL_ASSETS=/opt/airflow/local-assets/
+
+# Copy python scripts and configurations
+COPY scripts/ml/ ${MY_LOCAL_ASSETS}
+
+# Copy test raw input audio data since for this demo we dont have any cloud storage option
+COPY data/ ${MY_LOCAL_ASSETS}/raw_input_data/
+
+USER airflow
