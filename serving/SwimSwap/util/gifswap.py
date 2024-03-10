@@ -22,7 +22,7 @@ from util.add_watermark import watermark_image
 from util.norm import SpecificNorm
 from parsing_model.model import BiSeNet
 from array2gif import write_gif
-
+import imageio.v3 as iio
 
 def _totensor(array):
     tensor = torch.from_numpy(array)
@@ -42,7 +42,7 @@ def gif_swap(video_path, id_vetor, swap_model, detect_model, save_path, temp_res
         video_audio_clip = AudioFileClip(video_path)
 
     video = cv2.VideoCapture(video_path)
-    logoclass    = watermark_image('./SimSwap/simswaplogo/simswaplogo.png')
+    logoclass = watermark_image('/home/hojun/Documents/project/boostcamp/final_project/mlops/pipeline/serving/sf2f/realface.jpg')
     ret = True
     frame_index = 0
 
@@ -61,7 +61,7 @@ def gif_swap(video_path, id_vetor, swap_model, detect_model, save_path, temp_res
         n_classes = 19
         net = BiSeNet(n_classes=n_classes)
         net.cuda()
-        save_pth = os.path.join('./SimSwap/parsing_model/checkpoint', '79999_iter.pth')
+        save_pth = os.path.join('./parsing_model/checkpoint', '79999_iter.pth')
         net.load_state_dict(torch.load(save_pth))
         net.eval()
     else:
@@ -97,7 +97,13 @@ def gif_swap(video_path, id_vetor, swap_model, detect_model, save_path, temp_res
 
                 img = reverse2wholeimage(frame_align_crop_tenor_list,swap_result_list, frame_mat_list, crop_size, frame, logoclass,\
                         os.path.join(temp_results_dir, 'frame_{:0>7d}.jpg'.format(frame_index)), no_simswaplogo, pasring_model=net, use_mask=use_mask, norm=spNorm)
-                frames.append(img.tobytes())
+                
+                frame = frame.astype(np.uint8)
+                if not os.path.exists(temp_results_dir):
+                    os.mkdir(temp_results_dir)
+                cv2.imwrite(os.path.join(temp_results_dir, 'frame_{:0>7d}.jpg'.format(frame_index)), img)
+                # frames.append(img.tobytes())
+                frames.append(img)
 
             else:
                 if not os.path.exists(temp_results_dir):
@@ -106,23 +112,17 @@ def gif_swap(video_path, id_vetor, swap_model, detect_model, save_path, temp_res
                 # if not no_simswaplogo:
                     # frame = logoclass.apply_frames(frame)
                 cv2.imwrite(os.path.join(temp_results_dir, 'frame_{:0>7d}.jpg'.format(frame_index)), frame)
+                print(1)
         else:
             break
-
-    video.release()
-
-    # image_filename_list = []
-    # path = os.path.join(temp_results_dir, '*.jpg')
-    # image_filenames = sorted(glob.glob(path))
-
-    # clips = ImageSequenceClip(image_filenames, fps = fps)
-
-    # if not no_audio:
-    #     clips = clips.set_audio(video_audio_clip)
-
-    # # if save_path.split('.')[-1] == 'gif':
-    # clips.write_gif(save_path)
-
+    
+    print(type(frames[0]))
+    print(np.unique(frames[0]))
+    # for idx in range(len(frames)):
+    #     # if np.where(frames[idx]>255,True,False):
+    #         print(np.where(frames[idx]>255))
+    iio.imwrite(save_path,
+                    frames)
     # write_gif(frames, save_path, fps=fps)
     return frames, fps
     
