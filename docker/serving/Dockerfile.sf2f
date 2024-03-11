@@ -1,0 +1,12 @@
+FROM pytorch:2.2.1-cuda11.8-cudnn8-runtime
+
+
+RUN apt install -y update
+RUN apt install -y gcc
+
+RUN pip install glog \
+python_speech_features \
+webrtcvad \
+pydub \
+mlflow \
+boto3

@@ -15,18 +15,26 @@ from PIL import Image
 import torch.nn.functional as F
 from torchvision import transforms
 from insightface_func.face_detect_crop_single import Face_detect_crop
-from util.gifswap import gif_swap
 from util.mp4swap import mp4_swap
+from util.upload_minio import upload_object
 import os
 import mlflow
+from minio import Minio
 
 os.environ["MLFLOW_S3_ENDPOINT_URL"] = "http://223.130.133.236:9000/"
 os.environ["MLFLOW_TRACKING_URI"] = "http://223.130.133.236:5001/"
 os.environ["AWS_ACCESS_KEY_ID"] = "minio"
 os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
+
+BUCKET_NAME = "voice2face"
+ACCESS_KEY = os.environ.get("AWS_ACCESS_KEY_ID")
+SECRET_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
+MINIO_API_HOST = "223.130.133.236:9000"
+client = Minio(MINIO_API_HOST, ACCESS_KEY, SECRET_KEY, secure=False)
+
 model = mlflow.pytorch.load_model("runs:/31999afcd8784fbfad77aab54f075a84/swimswap_pytorch").eval()
 
-def face_synthesis_gif(face_image_url,base_video_url):
+def face_synthesis_gif(face_image_url,base_video_url,request_id,result_id):
     def lcm(a, b): return abs(a * b) / fractions.gcd(a, b) if a and b else 0
 
 
@@ -60,15 +68,21 @@ def face_synthesis_gif(face_image_url,base_video_url):
         img_id_downsample = F.interpolate(img_id, size=(112,112))
         latend_id = model.netArc(img_id_downsample)
         latend_id = F.normalize(latend_id, p=2, dim=1)
+        save_url = f"web_aritifact/output/{request_id}_{result_id}_video.mp4"
+        os.makedirs(os.path.dirname(save_url),exist_ok=True)
         
-        save_url = "./output/temp.mp4"
-        frames, fps = mp4_swap(base_video_url, latend_id, model, app, save_url,\
+        make_flag = mp4_swap(base_video_url, latend_id, model, app, save_url,\
                         no_simswaplogo=True, use_mask=True, crop_size=crop_size)
-        
-    return frames, fps
+        print("dssdlkksld",make_flag)
+        if make_flag:
+            with open(save_url, 'rb') as file_data:
+                file_stat = os.stat(save_url)
+                upload_object(client, save_url, file_data,file_stat.st_size,BUCKET_NAME)
+    
+    return "Sucess"
 
 
 if __name__ == '__main__':
-    face_image_url,base_video_url = "/home/hojun/Documents/project/boostcamp/final_project/mlops/pipeline/serving/sf2f/realface.jpg","/home/hojun/Documents/project/boostcamp/final_project/mlops/pipeline/serving/SwimSwap/hj_24fps_square.mp4"
-    face_synthesis_gif(face_image_url,base_video_url)
+    face_image_url,base_video_url = "./data/realface.jpg","./data/hj_24fps_square.mp4"
+    face_synthesis_gif(face_image_url,base_video_url,0,0)
 
