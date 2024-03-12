@@ -10,6 +10,7 @@ import mlflow
 from PIL import Image
 import io
 from minio import Minio
+from minio.error import S3Error
 
 model_url = "runs:/2413bd3a87c64b139da84f9c6b78813c/sf2f_pytorch"
 
@@ -34,35 +35,47 @@ def load_voice_to_face(model_url):
     model =  mlflow.pytorch.load_model(model_url).cuda().eval()
     
 def generate_voice_to_face(voice_url,request_id,result_id):
+    try:
+        #file 정보를 받아오는 
+        temp_folder_path = "./temp/"
+        os.makedirs(temp_folder_path,exist_ok=True)
+        save_path = os.path.join(temp_folder_path,os.path.basename(voice_url))
+        object_path = "/".join(voice_url.split("/")[4:])
+        
+        client.fget_object(BUCKET_NAME, object_path, save_path)
+        
+        mel_transform = set_mel_transform("vox_mel")
+        image_normalize_method = 'imagenet'
+        log_mel = wav_to_mel(save_path)
+        log_mel = mel_transform(log_mel).type(torch.cuda.FloatTensor)
 
-    mel_transform = set_mel_transform("vox_mel")
-    image_normalize_method = 'imagenet'
-    log_mel = wav_to_mel(voice_url)
-    log_mel = mel_transform(log_mel).type(torch.cuda.FloatTensor)
+        log_mel_segs = window_segment(log_mel, window_length=125, stride_length=63)
+        log_mel = log_mel.unsqueeze(0)
 
-    log_mel_segs = window_segment(log_mel, window_length=125, stride_length=63)
-    log_mel = log_mel.unsqueeze(0)
+        with torch.no_grad():
+            imgs_fused, others = model(log_mel_segs.unsqueeze(0))
+        if isinstance(imgs_fused, tuple):
+            imgs_fused = imgs_fused[-1]
+        imgs_fused = imgs_fused.cpu().detach()
+        imgs_fused = imagenet_deprocess_batch(imgs_fused, normalize_method=image_normalize_method)
+        for j in range(imgs_fused.shape[0]):
+            img_np = imgs_fused[j].numpy().transpose(1, 2, 0) # 64x64x3
 
-    with torch.no_grad():
-        imgs_fused, others = model(log_mel_segs.unsqueeze(0))
-    if isinstance(imgs_fused, tuple):
-        imgs_fused = imgs_fused[-1]
-    imgs_fused = imgs_fused.cpu().detach()
-    imgs_fused = imagenet_deprocess_batch(imgs_fused, normalize_method=image_normalize_method)
-    for j in range(imgs_fused.shape[0]):
-        img_np = imgs_fused[j].numpy().transpose(1, 2, 0) # 64x64x3
-
-    pil_image = Image.fromarray(img_np)
-    a = Image.open("ss_korean.png")
-    print(a.format)
-    # Save the image to an in-memory file
-    in_mem_file = io.BytesIO()
-    pil_image.save(in_mem_file, format="PNG")
-    in_mem_file.seek(0)
-    img_byte_arr = in_mem_file.getvalue()
-    
-    
-    upload_object(client, f"web_artifact/output/{request_id}_{result_id}_image.png",in_mem_file,len(img_byte_arr),BUCKET_NAME)
-    return img_np
+        pil_image = Image.fromarray(img_np)
+        a = Image.open("ss_korean.png")
+        print(a.format)
+        # Save the image to an in-memory file
+        in_mem_file = io.BytesIO()
+        pil_image.save(in_mem_file, format="PNG")
+        in_mem_file.seek(0)
+        img_byte_arr = in_mem_file.getvalue()
+        
+        
+        upload_object(client, f"web_artifact/output/{request_id}_{result_id}_image.png",in_mem_file,len(img_byte_arr),BUCKET_NAME)
+        os.remove(save_path)
+        return "202"
+    except:
+        os.remove(save_path)
+        return "400"
 # generate_voice_to_face("/home/hojun/Documents/project/boostcamp/final_project/mlops/pipeline/serving/sf2f/녹음_남자목소리_여잘노래.wav")
-generate_voice_to_face("/workspace/people_audio.wav",0,0)
+generate_voice_to_face("http://223.130.133.236:9000/voice2face-public/web_artifact/input/noeum_wave.wav",0,0)

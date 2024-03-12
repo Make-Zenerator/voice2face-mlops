@@ -44,10 +44,17 @@ def face_synthesis_gif(face_image_url,base_video_url,request_id,result_id):
     ])
     crop_size = 224
     
+    temp_folder_path = "./temp/"
+    os.makedirs(temp_folder_path,exist_ok=True)
+    save_path = os.path.join(temp_folder_path,os.path.basename(face_image_url))
+    object_path = "/".join(face_image_url.split("/")[4:])
+    
+    client.fget_object(BUCKET_NAME, object_path, save_path)
+    
     app = Face_detect_crop(name='antelope', root='./insightface_func/models')
     app.prepare(ctx_id= 0, det_thresh=0.6, det_size=(640,640),mode="{}")
     with torch.no_grad():
-        pic_a = face_image_url
+        pic_a = save_path
         print(pic_a)
         # img_a = Image.open(pic_a).convert('RGB')
         img_a_whole = cv2.imread(pic_a)
@@ -70,19 +77,18 @@ def face_synthesis_gif(face_image_url,base_video_url,request_id,result_id):
         latend_id = F.normalize(latend_id, p=2, dim=1)
         save_url = f"web_artifact/output/{request_id}_{result_id}_video.mp4"
         os.makedirs(os.path.dirname(save_url),exist_ok=True)
-        
         make_flag = mp4_swap(base_video_url, latend_id, model, app, save_url,\
                         no_simswaplogo=True, use_mask=True, crop_size=crop_size)
-        print("dssdlkksld",make_flag)
+        # print("dssdlkksld",make_flag)
         if make_flag:
             with open(save_url, 'rb') as file_data:
                 file_stat = os.stat(save_url)
                 upload_object(client, save_url, file_data,file_stat.st_size,BUCKET_NAME)
-    
+                os.remove(save_url)
     return "Sucess"
 
 
 if __name__ == '__main__':
-    face_image_url,base_video_url = "./data/realface.jpg","./data/hj_24fps_square.mp4"
+    face_image_url,base_video_url = "http://223.130.133.236:9000/voice2face/web_artifact/output/realface.jpg","http://223.130.133.236:9000/voice2face-public/site/main/hj_24fps_square.mp4"
     face_synthesis_gif(face_image_url,base_video_url,0,0)
 
