@@ -68,7 +68,7 @@ def face_synthesis_gif(face_image_url,base_video_url,request_id,result_id):
         img_id_downsample = F.interpolate(img_id, size=(112,112))
         latend_id = model.netArc(img_id_downsample)
         latend_id = F.normalize(latend_id, p=2, dim=1)
-        save_url = f"web_aritifact/output/{request_id}_{result_id}_video.mp4"
+        save_url = f"web_artifact/output/{request_id}_{result_id}_video.mp4"
         os.makedirs(os.path.dirname(save_url),exist_ok=True)
         
         make_flag = mp4_swap(base_video_url, latend_id, model, app, save_url,\

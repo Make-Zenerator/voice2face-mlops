@@ -62,7 +62,7 @@ def generate_voice_to_face(voice_url,request_id,result_id):
     img_byte_arr = in_mem_file.getvalue()
     
     
-    upload_object(client, f"web_aritifact/output/{request_id}_{result_id}_image.png",in_mem_file,len(img_byte_arr),BUCKET_NAME)
+    upload_object(client, f"web_artifact/output/{request_id}_{result_id}_image.png",in_mem_file,len(img_byte_arr),BUCKET_NAME)
     return img_np
 # generate_voice_to_face("/home/hojun/Documents/project/boostcamp/final_project/mlops/pipeline/serving/sf2f/녹음_남자목소리_여잘노래.wav")
 generate_voice_to_face("/workspace/people_audio.wav",0,0)
