@@ -62,7 +62,7 @@ def face_synthesis_gif(face_image_url,base_video_url,request_id,result_id):
         try:
             img_a_align_crop, _ = app.get(img = img_a_whole,crop_size=crop_size)
         except TypeError:
-            return "Failed : Dont detect Face"
+            return 400
             
         img_a_align_crop_pil = Image.fromarray(cv2.cvtColor(img_a_align_crop[0],cv2.COLOR_BGR2RGB)) 
         img_a = transformer_Arcface(img_a_align_crop_pil)
@@ -85,7 +85,7 @@ def face_synthesis_gif(face_image_url,base_video_url,request_id,result_id):
                 file_stat = os.stat(save_url)
                 upload_object(client, save_url, file_data,file_stat.st_size,BUCKET_NAME)
                 os.remove(save_url)
-    return "Sucess"
+    return 200
 
 
 if __name__ == '__main__':
