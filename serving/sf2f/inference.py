@@ -1,8 +1,8 @@
 import torch
 import os, glob
 import mlflow
-from utils import wav2mel, upload_minio
-from datasets import imagenet_deprocess_batch, set_mel_transform, \
+from .utils import wav2mel, upload_minio
+from .datasets import imagenet_deprocess_batch, set_mel_transform, \
     deprocess_and_save, window_segment
 import mlflow
 from PIL import Image
