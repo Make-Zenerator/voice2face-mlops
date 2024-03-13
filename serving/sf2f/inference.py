@@ -1,14 +1,10 @@
-try:
-    from . import models
-except:
-    from .models import *
+import sf2f.models
 import torch
 import os, glob
 import mlflow
-from .utils import wav2mel, upload_minio
-from .datasets import imagenet_deprocess_batch, set_mel_transform, \
+from sf2f.utils import wav2mel, upload_minio
+from sf2f.datasets import imagenet_deprocess_batch, set_mel_transform, \
     deprocess_and_save, window_segment
-import mlflow
 from PIL import Image
 import io
 from minio import Minio
