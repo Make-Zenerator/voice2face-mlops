@@ -2,7 +2,7 @@ import torch
 try:
     from .models import *
 except:
-    from models import *
+    from ..models import *
 from copy import deepcopy
 from utils import update_values, load_model_state
 import glog as log
