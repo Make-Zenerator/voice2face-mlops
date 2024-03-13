@@ -17,7 +17,7 @@ import webrtcvad
 try:
     import vad_ex
 except:
-    from .utils import vad_ex
+    from utils import vad_ex
 
 
 def vad_process(path):
