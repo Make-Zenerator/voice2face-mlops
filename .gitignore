@@ -166,3 +166,5 @@ tombstones
 prometheus/prometheus-volume/data/*
 index
 0000*
+*.onnx
+*.pth
