@@ -1,4 +1,4 @@
-import sf2f.models
+from sf2f import models
 import torch
 import os, glob
 import mlflow
