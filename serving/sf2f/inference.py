@@ -1,4 +1,7 @@
-import .models
+try:
+    from . import models
+except:
+    import .models as models
 import torch
 import os, glob
 import mlflow
