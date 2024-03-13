@@ -1,7 +1,7 @@
 from flask import Flask, request
 from flask_cors import CORS
 from sf2f.inference import generate_voice_to_face
-from swimSwap.inference import face_synthesis_gif
+from SwimSwap.inference import face_synthesis_gif
 
 app = Flask(__name__)
 # app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 # 용량제한
