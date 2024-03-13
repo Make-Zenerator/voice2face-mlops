@@ -5,7 +5,7 @@ import numpy as np
 try: 
     from .datasets import VoxDataset
 except:
-    from ..dataset import VoxDataset
+    from ..datasets import VoxDataset
 from torch.utils.data import DataLoader
 
 
