@@ -14,9 +14,9 @@ import numpy as np
 from PIL import Image
 import torch.nn.functional as F
 from torchvision import transforms
-from insightface_func.face_detect_crop_single import Face_detect_crop
-from util.mp4swap import mp4_swap
-from util.upload_minio import upload_object
+from .insightface_func.face_detect_crop_single import Face_detect_crop
+from .util.mp4swap import mp4_swap
+from .util.upload_minio import upload_object
 import os
 import mlflow
 from minio import Minio
