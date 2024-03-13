@@ -2,7 +2,10 @@ import json
 import os
 import os.path as osp
 import numpy as np
-from datasets import VoxDataset
+try: 
+    from .datasets import VoxDataset
+except:
+    from ..dataset import VoxDataset
 from torch.utils.data import DataLoader
 
 
