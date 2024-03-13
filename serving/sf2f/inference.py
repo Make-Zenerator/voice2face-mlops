@@ -1,7 +1,7 @@
 try:
     from . import models
 except:
-    import .models as models
+    from .models import *
 import torch
 import os, glob
 import mlflow
