@@ -1,13 +1,7 @@
 import torch
-try:
-    from .models import *
-except:
-    from ..models import *
+import models
 from copy import deepcopy
-try:
-    from ..utils import update_values, load_model_state
-except:
-    from .utils import update_values, load_model_state
+from utils import update_values, load_model_state
 import glog as log
 
 def build_model(opts, image_size, checkpoint_start_from=None):

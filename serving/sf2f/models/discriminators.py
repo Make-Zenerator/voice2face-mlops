@@ -2,19 +2,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-try: 
-    from ..utils.bilinear import crop_bbox_batch, uncrop_bbox
-except:
-    from .utils.bilinear import crop_bbox_batch, uncrop_bbox
-try:
-    from ..utils.box_utils import box_union, box_in_region
-except:
-    from .utils.box_utils import box_union, box_in_region
+from utils.bilinear import crop_bbox_batch, uncrop_bbox
+from utils.box_utils import box_union, box_in_region
 from .layers import GlobalAvgPool, Flatten, get_activation, build_cnn
-try:
-    from .models import *
-except:
-    from ..models import *
+import models
 
 
 class PatchDiscriminator(nn.Module):
