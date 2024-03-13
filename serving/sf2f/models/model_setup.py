@@ -4,7 +4,10 @@ try:
 except:
     from ..models import *
 from copy import deepcopy
-from utils import update_values, load_model_state
+try:
+    from ..utils import update_values, load_model_state
+except:
+    from .utils import update_values, load_model_state
 import glog as log
 
 def build_model(opts, image_size, checkpoint_start_from=None):
