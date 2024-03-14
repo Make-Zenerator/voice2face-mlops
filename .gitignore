@@ -174,3 +174,5 @@ index
 meta.json
 *.tar
 *.pth
+*.onnx
+*.pth

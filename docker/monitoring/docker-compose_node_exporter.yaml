@@ -1,0 +1,12 @@
+version: '3.7'
+services:
+  node:
+   image: prom/node-exporter
+   container_name: node-exporter
+   ports:
+     - 9100:9100
+   networks:
+     - promnet
+networks:
+  promnet:
+    driver: bridge
