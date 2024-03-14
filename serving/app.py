@@ -1,7 +1,7 @@
 from flask import Flask, request
 from flask_cors import CORS
-from sf2f.inference import generate_voice_to_face
-from SwimSwap.inference import face_synthesis_gif
+from sf2f import inference as sf2f
+from SwimSwap import inference as simswap 
 
 app = Flask(__name__)
 # app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 # 용량제한
@@ -21,14 +21,14 @@ def inference():
     gif_dict = {"woman" : 'hj', "man" : 'tae'}
 
     try: 
-        result = generate_voice_to_face(voice_url, request_id, result_id)
+        result = sf2f.generate_voice_to_face(voice_url, request_id, result_id)
         if result == 400:
             return {'status_code' : result}
         
         voice_image_url = f"http://223.130.133.236:9000/voice2face-public/web_artifact/output/{request_id}_{result_id}_image.png"
         video_url = f"http://223.130.133.236:9000/voice2face-public/site/result/{gif_dict[gender]}_24fps_square.mp4"
         
-        result = face_synthesis_gif(voice_image_url, video_url, request_id, result_id)
+        result = simswap.face_synthesis_gif(voice_image_url, video_url, request_id, result_id)
         if result == 400:
             return {'status_code' : result}
 
