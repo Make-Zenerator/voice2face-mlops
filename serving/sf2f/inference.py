@@ -23,6 +23,7 @@ os.environ["MINIO_BUCKET"] = "voice2face"
 os.environ["MINIO_ENDPOINT"] = "223.130.133.236:9000"
 
 BUCKET_NAME = "voice2face"
+# PUBLICE_BUCKET_NAME = "voice2face-public"
 ACCESS_KEY = os.environ.get("AWS_ACCESS_KEY_ID")
 SECRET_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
 MINIO_API_HOST = "223.130.133.236:9000"
@@ -35,14 +36,17 @@ def load_voice_to_face(model_url):
     model =  mlflow.pytorch.load_model(model_url).cuda().eval()
     
 def generate_voice_to_face(voice_url,request_id,result_id):
+    #file 정보를 받아오는 
+    temp_folder_path = "./temp/"
+    os.makedirs(temp_folder_path,exist_ok=True)
+    save_path = os.path.join(temp_folder_path,os.path.basename(voice_url))
+    object_path = "/".join(voice_url.split("/")[4:])
+    GET_BUCKET_NAME = voice_url.split("/")[3]
+    
+    file_path = f"web_artifact/output/{request_id}_{result_id}_image.png"
+    save_url = f"http://{MINIO_API_HOST}/{GET_BUCKET_NAME}/{file_path}"
     try:
-        #file 정보를 받아오는 
-        temp_folder_path = "./temp/"
-        os.makedirs(temp_folder_path,exist_ok=True)
-        save_path = os.path.join(temp_folder_path,os.path.basename(voice_url))
-        object_path = "/".join(voice_url.split("/")[4:])
-        
-        client.fget_object(BUCKET_NAME, object_path, save_path)
+        client.fget_object(GET_BUCKET_NAME, object_path, save_path)
         
         mel_transform = set_mel_transform("vox_mel")
         image_normalize_method = 'imagenet'
@@ -70,12 +74,11 @@ def generate_voice_to_face(voice_url,request_id,result_id):
         in_mem_file.seek(0)
         img_byte_arr = in_mem_file.getvalue()
         
-        
-        upload_object(client, f"web_artifact/output/{request_id}_{result_id}_image.png",in_mem_file,len(img_byte_arr),BUCKET_NAME)
+        upload_object(client, file_path, in_mem_file, len(img_byte_arr), BUCKET_NAME)
         os.remove(save_path)
-        return "202"
+        return 200, save_url
     except:
         os.remove(save_path)
-        return "400"
+        return 400, save_url
 # generate_voice_to_face("/home/hojun/Documents/project/boostcamp/final_project/mlops/pipeline/serving/sf2f/녹음_남자목소리_여잘노래.wav")
-generate_voice_to_face("http://223.130.133.236:9000/voice2face-public/web_artifact/input/noeum_wave.wav",0,0)
+# generate_voice_to_face("http://223.130.133.236:9000/voice2face-public/web_artifact/input/noeum_wave.wav",0,0)

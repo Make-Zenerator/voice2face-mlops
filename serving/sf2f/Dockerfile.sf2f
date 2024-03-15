@@ -12,7 +12,9 @@ webrtcvad \
 pydub \
 mlflow \
 minio \
-boto3
+boto3 \
+flask \
+flask_cors
 
-CMD cd ${base_path} && python inference.py
+ENTRYPOINT ["gunicorn", "-w", "1", "-b", "0.0.0.0:5050", "app:app", "--reload"]
 # CMD [ "python", "inference.py" ]

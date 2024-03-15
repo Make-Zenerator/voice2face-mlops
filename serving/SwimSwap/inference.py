@@ -50,6 +50,7 @@ def face_synthesis_gif(face_image_url,base_video_url,request_id,result_id):
     object_path = "/".join(face_image_url.split("/")[4:])
     
     client.fget_object(BUCKET_NAME, object_path, save_path)
+    save_url = f"web_artifact/output/{request_id}_{result_id}_video.mp4"
     
     app = Face_detect_crop(name='antelope', root='./insightface_func/models')
     app.prepare(ctx_id= 0, det_thresh=0.6, det_size=(640,640),mode="{}")
@@ -62,7 +63,7 @@ def face_synthesis_gif(face_image_url,base_video_url,request_id,result_id):
         try:
             img_a_align_crop, _ = app.get(img = img_a_whole,crop_size=crop_size)
         except TypeError:
-            return 400
+            return 400, save_url
             
         img_a_align_crop_pil = Image.fromarray(cv2.cvtColor(img_a_align_crop[0],cv2.COLOR_BGR2RGB)) 
         img_a = transformer_Arcface(img_a_align_crop_pil)
@@ -75,17 +76,18 @@ def face_synthesis_gif(face_image_url,base_video_url,request_id,result_id):
         img_id_downsample = F.interpolate(img_id, size=(112,112))
         latend_id = model.netArc(img_id_downsample)
         latend_id = F.normalize(latend_id, p=2, dim=1)
-        save_url = f"web_artifact/output/{request_id}_{result_id}_video.mp4"
         os.makedirs(os.path.dirname(save_url),exist_ok=True)
         make_flag = mp4_swap(base_video_url, latend_id, model, app, save_url,\
                         no_simswaplogo=True, use_mask=True, crop_size=crop_size)
-        # print("dssdlkksld",make_flag)
+        print("dssdlkksld",make_flag)
         if make_flag:
             with open(save_url, 'rb') as file_data:
                 file_stat = os.stat(save_url)
                 upload_object(client, save_url, file_data,file_stat.st_size,BUCKET_NAME)
                 os.remove(save_url)
-    return 200
+        else:
+            return 400, save_url
+    return 200, save_url
 
 
 if __name__ == '__main__':
