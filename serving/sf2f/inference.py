@@ -67,7 +67,6 @@ def generate_voice_to_face(voice_url,request_id,result_id):
 
         pil_image = Image.fromarray(img_np)
         a = Image.open("ss_korean.png")
-        print(a.format)
         # Save the image to an in-memory file
         in_mem_file = io.BytesIO()
         pil_image.save(in_mem_file, format="PNG")

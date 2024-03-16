@@ -14,7 +14,9 @@ mlflow \
 minio \
 boto3 \
 flask \
-flask_cors
+flask_cors \
+gunicorn
 
-ENTRYPOINT ["gunicorn", "-w", "1", "-b", "0.0.0.0:5050", "app:app", "--reload"]
+EXPOSE 3002
+
 # CMD [ "python", "inference.py" ]

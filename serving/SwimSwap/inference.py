@@ -56,7 +56,6 @@ def face_synthesis_gif(face_image_url,base_video_url,request_id,result_id):
     app.prepare(ctx_id= 0, det_thresh=0.6, det_size=(640,640),mode="{}")
     with torch.no_grad():
         pic_a = save_path
-        print(pic_a)
         # img_a = Image.open(pic_a).convert('RGB')
         img_a_whole = cv2.imread(pic_a)
 
@@ -79,7 +78,6 @@ def face_synthesis_gif(face_image_url,base_video_url,request_id,result_id):
         os.makedirs(os.path.dirname(save_url),exist_ok=True)
         make_flag = mp4_swap(base_video_url, latend_id, model, app, save_url,\
                         no_simswaplogo=True, use_mask=True, crop_size=crop_size)
-        print("dssdlkksld",make_flag)
         if make_flag:
             with open(save_url, 'rb') as file_data:
                 file_stat = os.stat(save_url)

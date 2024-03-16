@@ -16,7 +16,7 @@ ADD http://223.130.133.236:9000/voice2face-public/model_resource/swimswap/79999_
 
 ADD http://223.130.133.236:9000/voice2face-public/model_resource/swimswap/antelope.zip ${base_path}/insightface_func/models
 
-RUN unzip ${base_path}/insightface_func/models/antelope.zip -d ${base_path}/insightface_func/models/
+# RUN unzip ${base_path}/insightface_func/models/antelope.zip -d ${base_path}/insightface_func/models/
 
 
 RUN pip install imageio \
@@ -26,7 +26,11 @@ moviepy \
 onnxruntime-gpu \
 mlflow \
 minio \
-boto3
+boto3 \
+flask \
+flask_cors \
+gunicorn
 
-CMD cd ${base_path} && python inference.py
+
+# ENTRYPOINT gunicorn -w 1 -b 0.0.0.0:3001 app:app --reload --timeout 90
 # CMD [ "python", "inference.py" ]

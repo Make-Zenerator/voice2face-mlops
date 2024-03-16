@@ -17,19 +17,18 @@ def inference():
     gender = make_json['gender']
     age = make_json['age']
     gif_dict = {"woman" : 'hj', "man" : 'tae'}
-
+    
     try: 
-        print('sdklsdsldksklsdkldkslskl')
         video_url = f"http://223.130.133.236:9000/voice2face-public/site/result/{gif_dict[gender]}_24fps_square.mp4"
-        print('sdklsdsldkkl',voice_image_url)
+        
         result,voice_video_url = face_synthesis_gif(voice_image_url, video_url, request_id, result_id)
-        print("Askaslkakls",result,voice_video_url)
+        
         if result == 400:
             return {'status_code' : result}
 
         return {'status_code' : 200,
                 'voice_image_url' : voice_image_url,
-                'voice_gif_url' : voice_video_url}
+                'voice_video_url' : voice_video_url}
     except Exception as ex:
         print(ex)
         return {"status_code" : 400, "error": str(ex)} #false->400
