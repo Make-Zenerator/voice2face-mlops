@@ -20,10 +20,15 @@ services:
     ports:
       - 9000:9000
       - 9001:9001
+      - 443:443
+    volumes:
+      - /data/minio:/data/minio
+      - /root/.minio:/root/.minio
+      - /root/.minio/certs:/root/.minio/certs
     environment:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: miniostorage
-    command: server /data/minio --console-address :9001
+    command: server /data/minio --console-address :9001 --address :443
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
       interval: 5s
