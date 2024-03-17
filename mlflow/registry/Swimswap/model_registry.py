@@ -13,10 +13,12 @@ import os
 
 import mlflow
 
-os.environ["MLFLOW_S3_ENDPOINT_URL"] = "http://223.130.133.236:9000"
+os.environ["MLFLOW_S3_ENDPOINT_URL"] = "https://storage.makezenerator.com:9000"
 os.environ["MLFLOW_TRACKING_URI"] = "http://223.130.133.236:5001"
 os.environ["AWS_ACCESS_KEY_ID"] = "minio"
 os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
+# os.environ["REQUESTS_CA_BUNDLE"] = "/root/.minio/certs/public.crt"
+os.environ["CURL_CA_BUNDLE"] = "/root/.minio/certs/public.key"
 mlflow.set_experiment("Swimswap")
 
 
