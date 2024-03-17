@@ -19,7 +19,7 @@ def inference():
     gif_dict = {"woman" : 'hj', "man" : 'tae'}
     
     try: 
-        video_url = f"http://223.130.133.236:9000/voice2face-public/site/result/{gif_dict[gender]}_24fps_square.mp4"
+        video_url = f"https://storage.makezenerator.com:9000/voice2face-public/site/result/{gif_dict[gender]}_24fps_square.mp4"
         
         result,voice_video_url = face_synthesis_gif(voice_image_url, video_url, request_id, result_id)
         

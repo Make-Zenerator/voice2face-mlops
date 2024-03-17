@@ -12,21 +12,21 @@ import io
 from minio import Minio
 from minio.error import S3Error
 
-model_url = "runs:/2413bd3a87c64b139da84f9c6b78813c/sf2f_pytorch"
+model_url = "runs:/12cdcde50fec472abe97d5094aff0979/sf2f_pytorch"
 
 #docker compose에서 지정해줘야함 Fastapi 
-os.environ["MLFLOW_S3_ENDPOINT_URL"] = "http://223.130.133.236:9000"
+os.environ["MLFLOW_S3_ENDPOINT_URL"] = "https://storage.makezenerator.com:9000"
 os.environ["MLFLOW_TRACKING_URI"] = "http://223.130.133.236:5001"
 os.environ["AWS_ACCESS_KEY_ID"] = "minio"
 os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
 os.environ["MINIO_BUCKET"] = "voice2face"
-os.environ["MINIO_ENDPOINT"] = "223.130.133.236:9000"
+os.environ["MINIO_ENDPOINT"] = "https://storage.makezenerator.com:9000"
 
 BUCKET_NAME = "voice2face"
 # PUBLICE_BUCKET_NAME = "voice2face-public"
 ACCESS_KEY = os.environ.get("AWS_ACCESS_KEY_ID")
 SECRET_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
-MINIO_API_HOST = "223.130.133.236:9000"
+MINIO_API_HOST = "storage.makezenerator.com:9000"
 client = Minio(MINIO_API_HOST, ACCESS_KEY, SECRET_KEY, secure=False)
 
 model = mlflow.pytorch.load_model(model_url).cuda().eval()
@@ -44,7 +44,7 @@ def generate_voice_to_face(voice_url,request_id,result_id):
     GET_BUCKET_NAME = voice_url.split("/")[3]
     
     file_path = f"web_artifact/output/{request_id}_{result_id}_image.png"
-    save_url = f"http://{MINIO_API_HOST}/{GET_BUCKET_NAME}/{file_path}"
+    save_url = f"https://{MINIO_API_HOST}/{GET_BUCKET_NAME}/{file_path}"
     try:
         client.fget_object(GET_BUCKET_NAME, object_path, save_path)
         
