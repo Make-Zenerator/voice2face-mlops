@@ -12,7 +12,7 @@ import io
 from minio import Minio
 from minio.error import S3Error
 
-model_url = "runs:/12cdcde50fec472abe97d5094aff0979/sf2f_pytorch"
+model_url = "runs:/07ed7e9001154f15af12e4c05bc939fe/sf2f_pytorch"
 
 #docker compose에서 지정해줘야함 Fastapi 
 os.environ["MLFLOW_S3_ENDPOINT_URL"] = "https://storage.makezenerator.com:9000"

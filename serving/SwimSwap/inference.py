@@ -32,7 +32,7 @@ SECRET_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
 MINIO_API_HOST = "storage.makezenerator.com:9000"
 client = Minio(MINIO_API_HOST, ACCESS_KEY, SECRET_KEY, secure=False)
 
-model = mlflow.pytorch.load_model("runs:/bc64fe2ee8ff4bce8fe708a445b76804/swimswap_pytorch").eval()
+model = mlflow.pytorch.load_model("runs:/c7430d77a51a454cad5f315f38af9104/swimswap_pytorch").eval()
 
 def face_synthesis_gif(face_image_url,base_video_url,request_id,result_id):
     def lcm(a, b): return abs(a * b) / fractions.gcd(a, b) if a and b else 0
