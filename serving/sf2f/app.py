@@ -37,7 +37,7 @@ def inference():
         })
         headers = {"user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36",
                    "Content-Type":"application/json"}
-        imagetovideo_response = requests.post("http://223.130.141.160:3001/imagetovideo", data=video_make_json, headers=headers)
+        imagetovideo_response = requests.post("http://0.0.0.0:3001/imagetovideo", data=video_make_json, headers=headers)
         response_data = imagetovideo_response.json()
 
         if response_data.get("status_code") == 400:
