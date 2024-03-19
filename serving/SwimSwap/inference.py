@@ -20,17 +20,17 @@ from util.upload_minio import upload_object
 import os
 import mlflow
 from minio import Minio
+from config import MLFLOW_S3_ENDPOINT_URL, MLFLOW_TRACKING_URI, AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, MINIO_BUCKET, MINIO_ENDPOINT
 
-os.environ["MLFLOW_S3_ENDPOINT_URL"] = "https://storage.makezenerator.com:9000"
-os.environ["MLFLOW_TRACKING_URI"] = "http://223.130.133.236:5001/"
-os.environ["AWS_ACCESS_KEY_ID"] = "minio"
-os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
+os.environ["MLFLOW_S3_ENDPOINT_URL"] = MLFLOW_S3_ENDPOINT_URL
+os.environ["MLFLOW_TRACKING_URI"] = MLFLOW_TRACKING_URI
+os.environ["AWS_ACCESS_KEY_ID"] = AWS_ACCESS_KEY
+os.environ["AWS_SECRET_ACCESS_KEY"] = AWS_SECRET_ACCESS_KEY
+os.environ["MINIO_BUCKET"] = MINIO_BUCKET
+os.environ["MINIO_ENDPOINT"] = MINIO_ENDPOINT
 
-BUCKET_NAME = "voice2face"
-ACCESS_KEY = os.environ.get("AWS_ACCESS_KEY_ID")
-SECRET_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
-MINIO_API_HOST = "storage.makezenerator.com:9000"
-client = Minio(MINIO_API_HOST, ACCESS_KEY, SECRET_KEY, secure=False)
+print(MINIO_ENDPOINT, AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY,MINIO_BUCKET)
+client = Minio(MINIO_ENDPOINT, AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, secure=True)
 
 model = mlflow.pytorch.load_model("runs:/c7430d77a51a454cad5f315f38af9104/swimswap_pytorch").eval()
 
@@ -88,7 +88,7 @@ def face_synthesis_gif(face_image_url,base_video_url,request_id,result_id):
     return 200, save_url
 
 
-if __name__ == '__main__':
-    face_image_url,base_video_url = "https://storage.makezenerator.com:9000/voice2face/web_artifact/output/realface.jpg","https://storage.makezenerator.com:9000/voice2face-public/site/main/hj_24fps_square.mp4"
-    face_synthesis_gif(face_image_url,base_video_url,0,0)
+# if __name__ == '__main__':
+#     face_image_url,base_video_url = "https://storage.makezenerator.com:9000/voice2face/web_artifact/output/realface.jpg","https://storage.makezenerator.com:9000/voice2face-public/site/main/hj_24fps_square.mp4"
+#     face_synthesis_gif(face_image_url,base_video_url,0,0)
 

@@ -11,23 +11,21 @@ from PIL import Image
 import io
 from minio import Minio
 from minio.error import S3Error
+from flask import jsonify
+from config import MLFLOW_S3_ENDPOINT_URL, MLFLOW_TRACKING_URI, AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, MINIO_BUCKET, MINIO_ENDPOINT
 
-model_url = "runs:/07ed7e9001154f15af12e4c05bc939fe/sf2f_pytorch"
+model_url = "runs:/54d4991723104ba9b048df217bd32ce6/sf2f_pytorch"
 
 #docker compose에서 지정해줘야함 Fastapi 
-os.environ["MLFLOW_S3_ENDPOINT_URL"] = "https://storage.makezenerator.com:9000"
-os.environ["MLFLOW_TRACKING_URI"] = "http://223.130.133.236:5001"
-os.environ["AWS_ACCESS_KEY_ID"] = "minio"
-os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
-os.environ["MINIO_BUCKET"] = "voice2face"
-os.environ["MINIO_ENDPOINT"] = "https://storage.makezenerator.com:9000"
+os.environ["MLFLOW_S3_ENDPOINT_URL"] = MLFLOW_S3_ENDPOINT_URL
+os.environ["MLFLOW_TRACKING_URI"] = MLFLOW_TRACKING_URI
+os.environ["AWS_ACCESS_KEY_ID"] = AWS_ACCESS_KEY
+os.environ["AWS_SECRET_ACCESS_KEY"] = AWS_SECRET_ACCESS_KEY
+os.environ["MINIO_BUCKET"] = MINIO_BUCKET
+os.environ["MINIO_ENDPOINT"] = MINIO_ENDPOINT
 
-BUCKET_NAME = "voice2face"
-# PUBLICE_BUCKET_NAME = "voice2face-public"
-ACCESS_KEY = os.environ.get("AWS_ACCESS_KEY_ID")
-SECRET_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
-MINIO_API_HOST = "storage.makezenerator.com:9000"
-client = Minio(MINIO_API_HOST, ACCESS_KEY, SECRET_KEY, secure=False)
+print(MINIO_ENDPOINT, AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY,MINIO_BUCKET)
+client = Minio(MINIO_ENDPOINT, AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, secure=True)
 
 model = mlflow.pytorch.load_model(model_url).cuda().eval()
 
@@ -44,7 +42,7 @@ def generate_voice_to_face(voice_url,request_id,result_id):
     GET_BUCKET_NAME = voice_url.split("/")[3]
     
     file_path = f"web_artifact/output/{request_id}_{result_id}_image.png"
-    save_url = f"https://{MINIO_API_HOST}/{GET_BUCKET_NAME}/{file_path}"
+    save_url = f"https://{MINIO_ENDPOINT}/{GET_BUCKET_NAME}/{file_path}"
     try:
         client.fget_object(GET_BUCKET_NAME, object_path, save_path)
         
@@ -73,11 +71,13 @@ def generate_voice_to_face(voice_url,request_id,result_id):
         in_mem_file.seek(0)
         img_byte_arr = in_mem_file.getvalue()
         
-        upload_object(client, file_path, in_mem_file, len(img_byte_arr), BUCKET_NAME)
+        upload_object(client, file_path, in_mem_file, len(img_byte_arr), MINIO_BUCKET)
         os.remove(save_path)
+        print(save_url)
         return 200, save_url
-    except:
+    except Exception as ex:
+        print(ex)
         os.remove(save_path)
-        return 400, save_url
+        return 400, str(ex)
 # generate_voice_to_face("/home/hojun/Documents/project/boostcamp/final_project/mlops/pipeline/serving/sf2f/녹음_남자목소리_여잘노래.wav")
 # generate_voice_to_face("http://223.130.133.236:9000/voice2face-public/web_artifact/input/noeum_wave.wav",0,0)

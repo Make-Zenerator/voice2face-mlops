@@ -15,7 +15,8 @@ minio \
 boto3 \
 flask \
 flask_cors \
-gunicorn
+gunicorn \
+python-dotenv
 
 EXPOSE 3002
 
