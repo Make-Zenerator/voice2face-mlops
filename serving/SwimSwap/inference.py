@@ -49,7 +49,7 @@ def face_synthesis_gif(face_image_url,base_video_url,request_id,result_id):
     save_path = os.path.join(temp_folder_path,os.path.basename(face_image_url))
     object_path = "/".join(face_image_url.split("/")[4:])
     
-    client.fget_object(BUCKET_NAME, object_path, save_path)
+    client.fget_object(MINIO_BUCKET, object_path, save_path)
     save_url = f"web_artifact/output/{request_id}_{result_id}_video.mp4"
     
     app = Face_detect_crop(name='antelope', root='./insightface_func/models')
@@ -81,14 +81,14 @@ def face_synthesis_gif(face_image_url,base_video_url,request_id,result_id):
         if make_flag:
             with open(save_url, 'rb') as file_data:
                 file_stat = os.stat(save_url)
-                upload_object(client, save_url, file_data,file_stat.st_size,BUCKET_NAME)
+                upload_object(client, save_url, file_data,file_stat.st_size,MINIO_BUCKET)
                 os.remove(save_url)
         else:
             return 400, save_url
     return 200, save_url
 
 
-# if __name__ == '__main__':
-#     face_image_url,base_video_url = "https://storage.makezenerator.com:9000/voice2face/web_artifact/output/realface.jpg","https://storage.makezenerator.com:9000/voice2face-public/site/main/hj_24fps_square.mp4"
-#     face_synthesis_gif(face_image_url,base_video_url,0,0)
+if __name__ == '__main__':
+    face_image_url,base_video_url = "https://storage.makezenerator.com:9000/voice2face/web_artifact/output/realface.jpg","https://storage.makezenerator.com:9000/voice2face-public/site/result/hj_24fps_square.mp4"
+    face_synthesis_gif(face_image_url,base_video_url,0,0)
 
