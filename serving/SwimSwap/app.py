@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from inference import face_synthesis_gif
 from config import MINIO_ENDPOINT
@@ -22,26 +22,19 @@ def inference():
     try: 
         video_url = f"https://{MINIO_ENDPOINT}/voice2face-public/site/result/{gif_dict[gender]}_24fps_square.mp4"
         
-        result,voice_video_url = face_synthesis_gif(voice_image_url, video_url, request_id, result_id)
+        result, voice_video_url = face_synthesis_gif(voice_image_url, video_url, request_id, result_id)
         
         if result == 400:
-            return {'status_code' : result}
+            return jsonify({'status_code' : result, "error": 'simswap error'})
 
-        return {'status_code' : 200,
+        return jsonify({'status_code' : 200,
                 'voice_image_url' : voice_image_url,
-                'voice_video_url' : voice_video_url}
+                'voice_video_url' : voice_video_url})
+                
     except Exception as ex:
         print(ex)
-        return {"status_code" : 400, "error": str(ex)} #false->400
-    except:
-        return {"status_code" : 400} #false->400
+        return jsonify({"status_code" : 400, "error": str(ex)}) #false->400
 
 if __name__ == "__main__":
     app.run(port=3001, debug=True)
-
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-from inference import generate_voice_to_face
-import json
-import requests
 
