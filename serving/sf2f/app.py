@@ -25,9 +25,9 @@ def inference():
         
         status_code, message = generate_voice_to_face(voice_url, request_id, result_id)
         if status_code == 400:
-            print(message)
             return jsonify({'status_code' : 400, "error" : message})
 
+        voice_image_url = message
         video_make_json = json.dumps({
             "request_id" : request_id,
             "result_id" : result_id,
@@ -41,10 +41,10 @@ def inference():
         response_data = imagetovideo_response.json()
 
         if response_data.get("status_code") == 400:
-            return jsonify({'status_code' : 400, "error" : "imagetovideo error"})
+            return jsonify({'status_code' : 400, "error" : response_data.get("error") })
         
         return jsonify({'status_code' : 200,
-                'voice_image_url' : response_data.get("voice_image_url"),
+                'voice_image_url' : voice_image_url,
                 'voice_video_url' : response_data.get("voice_video_url")})
     except Exception as ex:
         print(ex)
