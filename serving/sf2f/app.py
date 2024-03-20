@@ -41,7 +41,7 @@ def inference():
         response_data = imagetovideo_response.json()
 
         if response_data.get("status_code") == 400:
-            return jsonify({'status_code' : 400, "error" : "imagetovideo error"})
+            return jsonify({'status_code' : 400, "error" : response_data.get("error")})
         
         return jsonify({'status_code' : 200,
                 'voice_image_url' : response_data.get("voice_image_url"),
