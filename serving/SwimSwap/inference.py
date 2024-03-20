@@ -62,7 +62,7 @@ def face_synthesis_gif(face_image_url,base_video_url,request_id,result_id):
         try:
             img_a_align_crop, _ = app.get(img = img_a_whole,crop_size=crop_size)
         except TypeError:
-            return 400, save_url
+            return 400, "low quality image"
             
         img_a_align_crop_pil = Image.fromarray(cv2.cvtColor(img_a_align_crop[0],cv2.COLOR_BGR2RGB)) 
         img_a = transformer_Arcface(img_a_align_crop_pil)
@@ -88,7 +88,7 @@ def face_synthesis_gif(face_image_url,base_video_url,request_id,result_id):
     return 200, save_url
 
 
-if __name__ == '__main__':
-    face_image_url,base_video_url = "https://storage.makezenerator.com:9000/voice2face/web_artifact/output/realface.jpg","https://storage.makezenerator.com:9000/voice2face-public/site/result/hj_24fps_square.mp4"
-    face_synthesis_gif(face_image_url,base_video_url,0,0)
+# if __name__ == '__main__':
+#     face_image_url,base_video_url = "https://storage.makezenerator.com:9000/voice2face/web_artifact/output/1414_1414_image.png","https://storage.makezenerator.com:9000/voice2face-public/site/result/hj_24fps_square.mp4"
+#     face_synthesis_gif(face_image_url,base_video_url,0,0)
 
