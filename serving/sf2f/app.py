@@ -37,18 +37,21 @@ def inference():
         })
         headers = {"user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36",
                    "Content-Type":"application/json"}
-        imagetovideo_response = requests.post("http://0.0.0.0:3001/imagetovideo", data=video_make_json, headers=headers)
+        imagetovideo_response = requests.post("http://223.130.141.160:3001/imagetovideo", data=video_make_json, headers=headers)
         response_data = imagetovideo_response.json()
 
         if response_data.get("status_code") == 400:
-            return jsonify({'status_code' : 400, "error" : response_data.get("error")})
+            return jsonify({'status_code' : 404, "voice_image_url": voice_image_url, "error" : response_data.get("error")})
         
         return jsonify({'status_code' : 200,
                 'voice_image_url' : voice_image_url,
                 'voice_video_url' : response_data.get("voice_video_url")})
     except Exception as ex:
         print(ex)
-        return jsonify({"status_code" : 400, "error": str(ex)}) #false->400
+        if voice_image_url != None:
+            return jsonify({"status_code" : 404, "voice_image_url": voice_image_url, "error": str(ex)}) #false->400
+        else:
+            return jsonify({"status_code" : 400, "error": str(ex)}) #false->400
 
 if __name__ == "__main__":
     app.run(port=3002, debug=True)
