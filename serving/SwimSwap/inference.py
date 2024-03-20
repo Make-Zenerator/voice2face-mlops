@@ -44,21 +44,23 @@ def face_synthesis_gif(face_image_url,base_video_url,request_id,result_id):
     ])
     crop_size = 224
     
-    temp_folder_path = "./temp/"
-    os.makedirs(temp_folder_path,exist_ok=True)
-    save_path = os.path.join(temp_folder_path,os.path.basename(face_image_url))
-    object_path = "/".join(face_image_url.split("/")[4:])
-    
-    client.fget_object(MINIO_BUCKET, object_path, save_path)
-    save_url = f"web_artifact/output/{request_id}_{result_id}_video.mp4"
-    
-    app = Face_detect_crop(name='antelope', root='./insightface_func/models')
-    app.prepare(ctx_id= 0, det_thresh=0.6, det_size=(640,640),mode="{}")
-    with torch.no_grad():
-        pic_a = save_path
-        # img_a = Image.open(pic_a).convert('RGB')
-        img_a_whole = cv2.imread(pic_a)
+    try:
+        temp_folder_path = "./temp/"
+        os.makedirs(temp_folder_path,exist_ok=True)
+        save_path = os.path.join(temp_folder_path,os.path.basename(face_image_url))
+        object_path = "/".join(face_image_url.split("/")[4:])
+        
+        client.fget_object(MINIO_BUCKET, object_path, save_path)
+        save_url = f"web_artifact/output/{request_id}_{result_id}_video.mp4"
+        
+        app = Face_detect_crop(name='antelope', root='./insightface_func/models')
+        app.prepare(ctx_id= 0, det_thresh=0.6, det_size=(640,640),mode="{}")
+        with torch.no_grad():
+            pic_a = save_path
+            # img_a = Image.open(pic_a).convert('RGB')
+            img_a_whole = cv2.imread(pic_a)
 
+<<<<<<< HEAD
         try:
             img_a_align_crop, _ = app.get(img = img_a_whole,crop_size=crop_size)
         except TypeError:
@@ -69,26 +71,44 @@ def face_synthesis_gif(face_image_url,base_video_url,request_id,result_id):
         img_id = img_a.view(-1, img_a.shape[0], img_a.shape[1], img_a.shape[2])
         # convert numpy to tensor
         img_id = img_id.cuda()
+=======
+            try:
+                img_a_align_crop, _ = app.get(img = img_a_whole,crop_size=crop_size)
+            except TypeError:
+                return 400, save_url
+                
+            img_a_align_crop_pil = Image.fromarray(cv2.cvtColor(img_a_align_crop[0],cv2.COLOR_BGR2RGB)) 
+            img_a = transformer_Arcface(img_a_align_crop_pil)
+            img_id = img_a.view(-1, img_a.shape[0], img_a.shape[1], img_a.shape[2])
+            # convert numpy to tensor
+            img_id = img_id.cuda()
+>>>>>>> e84553ce8c69fe9ef5dc1f264648537a7e51c127
 
 
-        #create latent id
-        img_id_downsample = F.interpolate(img_id, size=(112,112))
-        latend_id = model.netArc(img_id_downsample)
-        latend_id = F.normalize(latend_id, p=2, dim=1)
-        os.makedirs(os.path.dirname(save_url),exist_ok=True)
-        make_flag = mp4_swap(base_video_url, latend_id, model, app, save_url,\
-                        no_simswaplogo=True, use_mask=True, crop_size=crop_size)
-        if make_flag:
-            with open(save_url, 'rb') as file_data:
-                file_stat = os.stat(save_url)
-                upload_object(client, save_url, file_data,file_stat.st_size,MINIO_BUCKET)
-                os.remove(save_url)
-        else:
-            return 400, save_url
-    return 200, save_url
+            #create latent id
+            img_id_downsample = F.interpolate(img_id, size=(112,112))
+            latend_id = model.netArc(img_id_downsample)
+            latend_id = F.normalize(latend_id, p=2, dim=1)
+            os.makedirs(os.path.dirname(save_url),exist_ok=True)
+            make_flag = mp4_swap(base_video_url, latend_id, model, app, save_url,\
+                            no_simswaplogo=True, use_mask=True, crop_size=crop_size)
+            if make_flag:
+                with open(save_url, 'rb') as file_data:
+                    file_stat = os.stat(save_url)
+                    upload_object(client, save_url, file_data,file_stat.st_size,MINIO_BUCKET)
+                    os.remove(save_url)
+            else:
+                return 400, "make_flag error"
+        return 200, save_url
+    except Exception as ex:
+        return 400, str(ex)
 
 
 # if __name__ == '__main__':
+<<<<<<< HEAD
 #     face_image_url,base_video_url = "https://storage.makezenerator.com:9000/voice2face/web_artifact/output/1414_1414_image.png","https://storage.makezenerator.com:9000/voice2face-public/site/result/hj_24fps_square.mp4"
+=======
+#     face_image_url,base_video_url = "https://storage.makezenerator.com:9000/voice2face/web_artifact/output/realface.jpg","https://storage.makezenerator.com:9000/voice2face-public/site/result/hj_24fps_square.mp4"
+>>>>>>> e84553ce8c69fe9ef5dc1f264648537a7e51c127
 #     face_synthesis_gif(face_image_url,base_video_url,0,0)
 

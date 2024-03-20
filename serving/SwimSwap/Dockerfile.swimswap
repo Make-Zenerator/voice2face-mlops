@@ -16,7 +16,7 @@ ADD https://storage.makezenerator.com:9000/voice2face-public/model_resource/swim
 
 ADD https://storage.makezenerator.com:9000/voice2face-public/model_resource/swimswap/antelope.zip ${base_path}/insightface_func/models
 
-# RUN unzip ${base_path}/insightface_func/models/antelope.zip -d ${base_path}/insightface_func/models/
+RUN unzip ${base_path}/insightface_func/models/antelope.zip -d ${base_path}/insightface_func/models/
 
 
 RUN pip install imageio \

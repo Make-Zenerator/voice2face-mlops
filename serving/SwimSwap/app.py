@@ -22,15 +22,15 @@ def inference():
     try: 
         video_url = f"https://{MINIO_ENDPOINT}/voice2face-public/site/result/{gif_dict[gender]}_24fps_square.mp4"
         
-        result, voice_video_url = face_synthesis_gif(voice_image_url, video_url, request_id, result_id)
+        result, voice_video_url = face_synthesis_gif(voice_image_url, video_url, int(request_id), int(result_id))
         
         if result == 400:
-            return jsonify({'status_code' : result, "error": 'simswap error'})
+            return jsonify({'status_code' : result, "error": voice_video_url})
 
         return jsonify({'status_code' : 200,
                 'voice_image_url' : voice_image_url,
                 'voice_video_url' : voice_video_url})
-                
+
     except Exception as ex:
         print(ex)
         return jsonify({"status_code" : 400, "error": str(ex)}) #false->400

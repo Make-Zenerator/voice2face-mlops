@@ -42,7 +42,7 @@ def generate_voice_to_face(voice_url,request_id,result_id):
     GET_BUCKET_NAME = voice_url.split("/")[3]
     
     file_path = f"web_artifact/output/{request_id}_{result_id}_image.png"
-    save_url = f"https://{MINIO_ENDPOINT}/{GET_BUCKET_NAME}/{file_path}"
+    save_url = f"https://{MINIO_ENDPOINT}/{MINIO_BUCKET}/{file_path}"
     try:
         client.fget_object(GET_BUCKET_NAME, object_path, save_path)
         

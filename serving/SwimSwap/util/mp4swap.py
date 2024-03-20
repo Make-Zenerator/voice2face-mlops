@@ -12,6 +12,7 @@ from util.add_watermark import watermark_image
 from util.norm import SpecificNorm
 from parsing_model.model import BiSeNet
 import imageio.v3 as iio
+import tempfile, requests
 
 def _totensor(array):
     tensor = torch.from_numpy(array)
@@ -19,8 +20,13 @@ def _totensor(array):
     return img.float().div(255)
 
 def mp4_swap(video_path, id_vetor, swap_model, detect_model, save_path, temp_results_dir='./temp_results', crop_size=224, no_simswaplogo=False, use_mask=False):
-    
-        video_forcheck = VideoFileClip(video_path)
+
+        r = requests.get(video_path)
+        with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
+            tmpfile.write(r.content)
+            tmp_video_path = tmpfile.name
+        video_forcheck = VideoFileClip(tmp_video_path)
+        
         if video_forcheck.audio is None:
             no_audio = True
         else:
