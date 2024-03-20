@@ -60,6 +60,18 @@ def face_synthesis_gif(face_image_url,base_video_url,request_id,result_id):
             # img_a = Image.open(pic_a).convert('RGB')
             img_a_whole = cv2.imread(pic_a)
 
+<<<<<<< HEAD
+        try:
+            img_a_align_crop, _ = app.get(img = img_a_whole,crop_size=crop_size)
+        except TypeError:
+            return 400, "low quality image"
+            
+        img_a_align_crop_pil = Image.fromarray(cv2.cvtColor(img_a_align_crop[0],cv2.COLOR_BGR2RGB)) 
+        img_a = transformer_Arcface(img_a_align_crop_pil)
+        img_id = img_a.view(-1, img_a.shape[0], img_a.shape[1], img_a.shape[2])
+        # convert numpy to tensor
+        img_id = img_id.cuda()
+=======
             try:
                 img_a_align_crop, _ = app.get(img = img_a_whole,crop_size=crop_size)
             except TypeError:
@@ -70,6 +82,7 @@ def face_synthesis_gif(face_image_url,base_video_url,request_id,result_id):
             img_id = img_a.view(-1, img_a.shape[0], img_a.shape[1], img_a.shape[2])
             # convert numpy to tensor
             img_id = img_id.cuda()
+>>>>>>> e84553ce8c69fe9ef5dc1f264648537a7e51c127
 
 
             #create latent id
@@ -92,6 +105,10 @@ def face_synthesis_gif(face_image_url,base_video_url,request_id,result_id):
 
 
 # if __name__ == '__main__':
+<<<<<<< HEAD
+#     face_image_url,base_video_url = "https://storage.makezenerator.com:9000/voice2face/web_artifact/output/1414_1414_image.png","https://storage.makezenerator.com:9000/voice2face-public/site/result/hj_24fps_square.mp4"
+=======
 #     face_image_url,base_video_url = "https://storage.makezenerator.com:9000/voice2face/web_artifact/output/realface.jpg","https://storage.makezenerator.com:9000/voice2face-public/site/result/hj_24fps_square.mp4"
+>>>>>>> e84553ce8c69fe9ef5dc1f264648537a7e51c127
 #     face_synthesis_gif(face_image_url,base_video_url,0,0)
 
