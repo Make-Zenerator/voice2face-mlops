@@ -49,9 +49,9 @@ def inference():
     except Exception as ex:
         print(ex)
         if voice_image_url != None:
-            return jsonify({"status_code" : 404, "voice_url" : voice_url, "voice_image_url": voice_image_url, "error": str(ex)}) #false->400
+            return jsonify({"status_code" : 404, "voice_image_url": voice_image_url, "error": str(ex)}) #false->400
         else:
-            return jsonify({"status_code" : 400, "voice_url" : voice_url, "error": str(ex)}) #false->400
+            return jsonify({"status_code" : 400, "error": str(ex)}) #false->400
 
 if __name__ == "__main__":
     app.run(port=3002, debug=True)
