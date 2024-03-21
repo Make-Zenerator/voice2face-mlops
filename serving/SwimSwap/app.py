@@ -25,7 +25,7 @@ def inference():
         result, voice_video_url = face_synthesis_gif(voice_image_url, video_url, int(request_id), int(result_id))
         
         if result == 400:
-            return jsonify({'status_code' : result, "error": voice_video_url})
+            raise Exception(voice_video_url)
 
         return jsonify({'status_code' : 200,
                 'voice_image_url' : voice_image_url,
