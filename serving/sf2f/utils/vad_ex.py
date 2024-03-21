@@ -6,6 +6,7 @@ from pydub import AudioSegment
 import webrtcvad
 from io import BytesIO
 import requests
+import subprocess
 
 # Modified https://github.com/wiseman/py-webrtcvad/blob/master/example.py
 
@@ -14,10 +15,7 @@ def read_wave(path):
     Takes the path, and returns (PCM audio data, sample rate).
     """
     #with contextlib.closing(wave.open(path, 'rb')) as wf:
-    audio = AudioSegment.from_file(path)
-    wav_audio = audio.export(format='wav')
-    with open(path, "wb") as f:
-        f.write(wav_audio.read())
+    subprocess.run(['ffmpeg', '-i', path,'-acodec', 'pcm_s16le', '-ar', '48000', '-ac', '1',path])
     with contextlib.closing(wave.open(path, 'rb')) as wf:
         num_channels = wf.getnchannels()
         #assert num_channels == 1
