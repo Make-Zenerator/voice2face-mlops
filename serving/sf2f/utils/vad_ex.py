@@ -14,8 +14,6 @@ def read_wave(path):
     """Reads a .wav file.
     Takes the path, and returns (PCM audio data, sample rate).
     """
-    #with contextlib.closing(wave.open(path, 'rb')) as wf:
-    subprocess.run(['ffmpeg', '-i', path,'-acodec', 'pcm_s16le', '-ar', '48000', '-ac', '1',path])
     with contextlib.closing(wave.open(path, 'rb')) as wf:
         num_channels = wf.getnchannels()
         #assert num_channels == 1

@@ -13,7 +13,9 @@ from minio import Minio
 from minio.error import S3Error
 from flask import jsonify
 from config import MLFLOW_S3_ENDPOINT_URL, MLFLOW_TRACKING_URI, AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, MINIO_BUCKET, MINIO_ENDPOINT
+import subprocess
 
+torch.cuda.empty_cache()
 model_url = "runs:/54d4991723104ba9b048df217bd32ce6/sf2f_pytorch"
 
 #docker compose에서 지정해줘야함 Fastapi 
@@ -37,7 +39,8 @@ def generate_voice_to_face(voice_url,request_id,result_id):
     #file 정보를 받아오는 
     temp_folder_path = "./temp/"
     os.makedirs(temp_folder_path,exist_ok=True)
-    save_path = os.path.join(temp_folder_path,os.path.basename(voice_url))
+    save_path = os.path.join(temp_folder_path, os.path.basename(voice_url))
+    convert_path = os.path.join(temp_folder_path, f"converted_{os.path.basename(voice_url)}")
     object_path = "/".join(voice_url.split("/")[4:])
     GET_BUCKET_NAME = voice_url.split("/")[3]
     
@@ -45,6 +48,8 @@ def generate_voice_to_face(voice_url,request_id,result_id):
     save_url = f"https://{MINIO_ENDPOINT}/{MINIO_BUCKET}/{file_path}"
     try:
         client.fget_object(GET_BUCKET_NAME, object_path, save_path)
+        # wav 파일로 변환 => ffmpeg 명령어 실행 
+        subprocess.run(['ffmpeg', '-i', save_path,'-acodec', 'pcm_s16le', '-ar', '48000', '-ac', '1', convert_path])
         
         mel_transform = set_mel_transform("vox_mel")
         image_normalize_method = 'imagenet'
@@ -73,11 +78,13 @@ def generate_voice_to_face(voice_url,request_id,result_id):
         
         upload_object(client, file_path, in_mem_file, len(img_byte_arr), MINIO_BUCKET)
         os.remove(save_path)
+        os.remove(convert_path)
         print(save_url)
         return 200, save_url
     except Exception as ex:
         print(ex)
         os.remove(save_path)
+        os.remove(convert_path)
         return 400, str(ex)
 # generate_voice_to_face("/home/hojun/Documents/project/boostcamp/final_project/mlops/pipeline/serving/sf2f/녹음_남자목소리_여잘노래.wav")
 # generate_voice_to_face("http://223.130.133.236:9000/voice2face-public/web_artifact/input/noeum_wave.wav",0,0)
