@@ -20,6 +20,12 @@ torch.cuda.empty_cache()
 model_url = "runs:/54d4991723104ba9b048df217bd32ce6/sf2f_pytorch"
 
 #docker compose에서 지정해줘야함 Fastapi 
+MLFLOW_S3_ENDPOINT_URL="https://storage.makezenerator.com:9000"
+MLFLOW_TRACKING_URI="http://223.130.133.236:5001"
+AWS_ACCESS_KEY="minio"
+AWS_SECRET_ACCESS_KEY="miniostorage"
+MINIO_BUCKET="voice2face"
+MINIO_ENDPOINT="storage.makezenerator.com:9000" 
 os.environ["MLFLOW_S3_ENDPOINT_URL"] = MLFLOW_S3_ENDPOINT_URL
 os.environ["MLFLOW_TRACKING_URI"] = MLFLOW_TRACKING_URI
 os.environ["AWS_ACCESS_KEY_ID"] = AWS_ACCESS_KEY
