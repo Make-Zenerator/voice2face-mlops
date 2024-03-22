@@ -37,7 +37,7 @@ def mp4_swap(video_path, id_vetor, swap_model, detect_model, save_path, temp_res
         if not no_audio:
             video_audio_clip = AudioFileClip(video_path)
         
-        video = cv2.VideoCapture(video_path)
+        video = cv2.VideoCapture(tmp_video_path)
         logoclass = None
         ret = True
         frame_index = 0
