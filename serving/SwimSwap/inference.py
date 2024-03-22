@@ -20,9 +20,12 @@ from util.upload_minio import upload_object
 import os
 import mlflow
 from minio import Minio
+import tempfile
+
 from config import MLFLOW_S3_ENDPOINT_URL, MLFLOW_TRACKING_URI, AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, MINIO_BUCKET, MINIO_ENDPOINT
 
 torch.cuda.empty_cache()
+
 os.environ["MLFLOW_S3_ENDPOINT_URL"] = MLFLOW_S3_ENDPOINT_URL
 os.environ["MLFLOW_TRACKING_URI"] = MLFLOW_TRACKING_URI
 os.environ["AWS_ACCESS_KEY_ID"] = AWS_ACCESS_KEY
@@ -44,22 +47,21 @@ def face_synthesis_gif(face_image_url,base_video_url,request_id,result_id):
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
     crop_size = 224
-    
     try:
-        temp_folder_path = "./temp/"
-        os.makedirs(temp_folder_path,exist_ok=True)
-        save_path = os.path.join(temp_folder_path,os.path.basename(face_image_url))
-        object_path = "/".join(face_image_url.split("/")[4:])
-        
-        client.fget_object(MINIO_BUCKET, object_path, save_path)
-        save_url = f"web_artifact/output/{request_id}_{result_id}_video.mp4"
-        
-        app = Face_detect_crop(name='antelope', root='./insightface_func/models')
-        app.prepare(ctx_id= 0, det_thresh=0.6, det_size=(640,640),mode="{}")
-        with torch.no_grad():
-            pic_a = save_path
-            # img_a = Image.open(pic_a).convert('RGB')
-            img_a_whole = cv2.imread(pic_a)
+        with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
+            object_path = "/".join(face_image_url.split("/")[4:])
+            VOICE_MINIO_BUCKET = face_image_url.split("/")[3]
+            
+            print(VOICE_MINIO_BUCKET)
+            client.fget_object(VOICE_MINIO_BUCKET, object_path, tmpfile.name)
+            save_url = f"web_artifact/output/{request_id}_{result_id}_video.mp4"
+            
+            app = Face_detect_crop(name='antelope', root='./insightface_func/models')
+            app.prepare(ctx_id= 0, det_thresh=0.6, det_size=(640,640),mode="{}")
+            with torch.no_grad():
+                pic_a = tmpfile.name
+                # img_a = Image.open(pic_a).convert('RGB')
+                img_a_whole = cv2.imread(pic_a)
 
         try:
             img_a_align_crop, _ = app.get(img = img_a_whole,crop_size=crop_size)
@@ -77,13 +79,14 @@ def face_synthesis_gif(face_image_url,base_video_url,request_id,result_id):
         img_id_downsample = F.interpolate(img_id, size=(112,112))
         latend_id = model.netArc(img_id_downsample)
         latend_id = F.normalize(latend_id, p=2, dim=1)
+        content_type = 'video/mp4'
         os.makedirs(os.path.dirname(save_url),exist_ok=True)
         make_flag = mp4_swap(base_video_url, latend_id, model, app, save_url,\
                         no_simswaplogo=True, use_mask=True, crop_size=crop_size)
         if make_flag:
             with open(save_url, 'rb') as file_data:
                 file_stat = os.stat(save_url)
-                upload_object(client, save_url, file_data,file_stat.st_size,MINIO_BUCKET)
+                upload_object(client, save_url, file_data,file_stat.st_size,VOICE_MINIO_BUCKET,content_type)
                 os.remove(save_url)
         else:
             return 400, "make_flag error"
@@ -92,7 +95,7 @@ def face_synthesis_gif(face_image_url,base_video_url,request_id,result_id):
         return 400, str(ex)
 
 
-# if __name__ == '__main__':
-#     face_image_url,base_video_url = "https://storage.makezenerator.com:9000/voice2face/web_artifact/output/1414_1414_image.png","https://storage.makezenerator.com:9000/voice2face-public/site/result/hj_24fps_square.mp4"
-#     face_synthesis_gif(face_image_url,base_video_url,0,0)
+if __name__ == '__main__':
+    face_image_url,base_video_url = "https://storage.makezenerator.com:9000/voice2face/web_artifact/output/realface.jpg","https://storage.makezenerator.com:9000/voice2face-public/site/result/hj_24fps_square.mp4"
+    face_synthesis_gif(face_image_url,base_video_url,100,1000)
 
