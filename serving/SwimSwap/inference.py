@@ -95,7 +95,7 @@ def face_synthesis_gif(face_image_url,base_video_url,request_id,result_id):
         return 400, str(ex)
 
 
-if __name__ == '__main__':
-    face_image_url,base_video_url = "https://storage.makezenerator.com:9000/voice2face/web_artifact/output/realface.jpg","https://storage.makezenerator.com:9000/voice2face-public/site/result/hj_24fps_square.mp4"
-    face_synthesis_gif(face_image_url,base_video_url,100,1000)
+# if __name__ == '__main__':
+#     face_image_url,base_video_url = "https://storage.makezenerator.com:9000/voice2face/web_artifact/output/realface.jpg","https://storage.makezenerator.com:9000/voice2face-public/site/result/hj_24fps_square.mp4"
+#     face_synthesis_gif(face_image_url,base_video_url,100,1000)
 

@@ -1,18 +1,13 @@
 import cv2
 import os
 import torch
-import shutil
 import numpy as np
 from tqdm import tqdm
 from util.reverse2original import reverse2wholeimage
-import moviepy.editor as mp
-from moviepy.editor import AudioFileClip, VideoFileClip 
-from moviepy.video.io.ImageSequenceClip import ImageSequenceClip
-from util.add_watermark import watermark_image
 from util.norm import SpecificNorm
 from parsing_model.model import BiSeNet
-import imageio.v3 as iio
 import tempfile, requests
+import imageio
 
 def _totensor(array):
     tensor = torch.from_numpy(array)
@@ -25,19 +20,9 @@ def mp4_swap(video_path, id_vetor, swap_model, detect_model, save_path, temp_res
         with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
             tmpfile.write(r.content)
             tmp_video_path = tmpfile.name
-        video_forcheck = VideoFileClip(tmp_video_path)
-        
-        if video_forcheck.audio is None:
-            no_audio = True
-        else:
-            no_audio = False
-
-        del video_forcheck
-
-        if not no_audio:
-            video_audio_clip = AudioFileClip(video_path)
         
         video = cv2.VideoCapture(tmp_video_path)
+
         logoclass = None
         ret = True
         frame_index = 0
@@ -50,11 +35,7 @@ def mp4_swap(video_path, id_vetor, swap_model, detect_model, save_path, temp_res
 
         
         fps = video.get(cv2.CAP_PROP_FPS)
-        print(fps)
-        save_video = cv2.VideoWriter(save_path,cv2.VideoWriter_fourcc(*'mp4v'),fps,(video_WIDTH,video_HEIGHT))
-        if  os.path.exists(temp_results_dir):
-                shutil.rmtree(temp_results_dir)
-
+        
         spNorm =SpecificNorm()
         if use_mask:
             n_classes = 19
@@ -100,24 +81,23 @@ def mp4_swap(video_path, id_vetor, swap_model, detect_model, save_path, temp_res
                     frame = frame.astype(np.uint8)
                     if not os.path.exists(temp_results_dir):
                         os.mkdir(temp_results_dir)
-                    # video.write(os.path.join(temp_results_dir, 'frame_{:0>7d}.jpg'.format(frame_index)), img)
-                    save_video.write(img)
-                    # frames.append(img.tobytes())
+           
+                    img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
                     frames.append(img)
 
                 else:
                     if not os.path.exists(temp_results_dir):
                         os.mkdir(temp_results_dir)
                     frame = frame.astype(np.uint8)
-                    # if not no_simswaplogo:
-                        # frame = logoclass.apply_frames(frame)
-                    save_video.write(frame)
+                    frame = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+                    frames.append(frame)
             else:
                 break
         
         
-        # iio.imwrite(save_path,
-        #                 frames)
+        with imageio.get_writer(save_path, fps=fps) as video:
+            for image in frames:
+                video.append_data(image)
         return True
     # except:
     #     return False
