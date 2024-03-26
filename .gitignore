@@ -168,3 +168,5 @@ index
 0000*
 *.onnx
 *.pth
+docker/monitoring/prometheus/prometheus-volume/data/*
+docker/monitoring/grafana-volume/*
