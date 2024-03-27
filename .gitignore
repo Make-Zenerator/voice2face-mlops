@@ -171,8 +171,11 @@ tombstones
 prometheus/prometheus-volume/data/*
 index
 0000*
+*.onnx
+*.pth
+docker/monitoring/prometheus/prometheus-volume/data/*
+docker/monitoring/grafana-volume/*
+
 meta.json
 *.tar
-*.pth
-*.onnx
 *.pth

@@ -15,8 +15,8 @@ RUN mkdir -p ${base_path}/SwimSwap/insightface_func/models \
     ${base_path}/SwimSwap/parsing_model/checkpoint \
     ${base_path}/SwimSwap/arcface_model 
 
-ADD http://223.130.133.236:9000/voice2face-public/model_resource/swimswap/79999_iter.pth ${base_path}/SwimSwap/parsing_model/checkpoint/
-ADD http://223.130.133.236:9000/voice2face-public/model_resource/swimswap/antelope.zip ${base_path}/SwimSwap/insightface_func/models/
+ADD https://storage.makezenerator.com:9000/voice2face-public/model_resource/swimswap/79999_iter.pth ${base_path}/SwimSwap/parsing_model/checkpoint/
+ADD https://storage.makezenerator.com:9000/voice2face-public/model_resource/swimswap/antelope.zip ${base_path}/SwimSwap/insightface_func/models/
 RUN unzip ${base_path}/SwimSwap/insightface_func/models/antelope.zip -d ${base_path}/SwimSwap/insightface_func/models/ && \
     rm ${base_path}/SwimSwap/insightface_func/models/antelope.zip
 

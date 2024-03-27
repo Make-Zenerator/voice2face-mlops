@@ -21,7 +21,7 @@ import os
 import mlflow
 from minio import Minio
 
-os.environ["MLFLOW_S3_ENDPOINT_URL"] = "http://223.130.133.236:9000/"
+os.environ["MLFLOW_S3_ENDPOINT_URL"] = "https://storage.makezenerator.com:9000"
 os.environ["MLFLOW_TRACKING_URI"] = "http://223.130.133.236:5001/"
 os.environ["AWS_ACCESS_KEY_ID"] = "minio"
 os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
@@ -29,7 +29,7 @@ os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
 BUCKET_NAME = "voice2face"
 ACCESS_KEY = os.environ.get("AWS_ACCESS_KEY_ID")
 SECRET_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
-MINIO_API_HOST = "223.130.133.236:9000"
+MINIO_API_HOST = "storage.makezenerator.com:9000"
 client = Minio(MINIO_API_HOST, ACCESS_KEY, SECRET_KEY, secure=False)
 
 model = mlflow.pytorch.load_model("runs:/31999afcd8784fbfad77aab54f075a84/swimswap_pytorch").eval()
