@@ -2,7 +2,8 @@ import models
 import torch
 import os, glob
 import mlflow
-from utils import wav2mel, upload_minio
+from utils.wav2mel import wav_to_mel
+from utils.upload_minio import upload_object
 from datasets import imagenet_deprocess_batch, set_mel_transform, \
     deprocess_and_save, window_segment
 import mlflow
@@ -45,7 +46,7 @@ def generate_voice_to_face(voice_url,request_id,result_id):
         
         mel_transform = set_mel_transform("vox_mel")
         image_normalize_method = 'imagenet'
-        log_mel = wav2mel.wav_to_mel(save_path)
+        log_mel = wav_to_mel(save_path)
         log_mel = mel_transform(log_mel).type(torch.cuda.FloatTensor)
 
         log_mel_segs = window_segment(log_mel, window_length=125, stride_length=63)
@@ -70,7 +71,7 @@ def generate_voice_to_face(voice_url,request_id,result_id):
         img_byte_arr = in_mem_file.getvalue()
         
         
-        upload_minio.upload_object(client, f"web_artifact/output/{request_id}_{result_id}_image.png",in_mem_file,len(img_byte_arr),BUCKET_NAME)
+        upload_object(client, f"web_artifact/output/{request_id}_{result_id}_image.png",in_mem_file,len(img_byte_arr),BUCKET_NAME)
         os.remove(save_path)
         return "202"
     except:
