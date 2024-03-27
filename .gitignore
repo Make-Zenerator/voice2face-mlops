@@ -173,9 +173,14 @@ index
 0000*
 *.onnx
 *.pth
+serving/sf2f/temp.ipynb
+.env.serving
 docker/monitoring/prometheus/prometheus-volume/data/*
 docker/monitoring/grafana-volume/*
 
 meta.json
 *.tar
 *.pth
+
+pipeline/docker/monitoring/prometheus/prometheus-volume/data/*
+pipeline/docker/monitoring/grafana-volume/*

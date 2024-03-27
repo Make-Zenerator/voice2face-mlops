@@ -12,7 +12,12 @@ webrtcvad \
 pydub \
 mlflow \
 minio \
-boto3
+boto3 \
+flask \
+flask_cors \
+gunicorn \
+python-dotenv
 
-CMD cd ${base_path} && python inference.py
+EXPOSE 3002
+
 # CMD [ "python", "inference.py" ]

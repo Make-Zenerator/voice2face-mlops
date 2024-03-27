@@ -4,6 +4,9 @@ import sys
 import wave
 from pydub import AudioSegment
 import webrtcvad
+from io import BytesIO
+import requests
+import subprocess
 
 # Modified https://github.com/wiseman/py-webrtcvad/blob/master/example.py
 
@@ -15,11 +18,13 @@ def read_wave(path):
         num_channels = wf.getnchannels()
         #assert num_channels == 1
         sample_width = wf.getsampwidth()
-        assert sample_width == 2
+        print(num_channels, sample_width)
+        #assert sample_width == 2
         sample_rate = wf.getframerate()
         #assert sample_rate in (8000, 16000, 32000)
         pcm_data = wf.readframes(wf.getnframes())
         return pcm_data, sample_rate
+
 
 def read_libri(path):
     mf = AudioSegment.from_file(path, "wav")
